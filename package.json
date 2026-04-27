@@ -1,6 +1,6 @@
 {
   "name": "smash-bros-coaching",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple login website for Smash Bros coaching sessions.",
   "main": "index.js",
   "scripts": {
