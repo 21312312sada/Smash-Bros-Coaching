@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lessons - Smash Bros Coaching</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #000000;
+        }
+        .header {
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #cccccc;
+        }
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #000000;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-links a {
+            background: #ffffff;
+            color: #000000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            border: 1px solid #000000;
+        }
+        .nav-links a:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .title {
+            text-align: center;
+            color: #000000;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .lessons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .lesson-card {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .lesson-card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .lesson-card h3 {
+            color: #000000;
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        .lesson-card p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #000000;
+        }
+        .lesson-meta {
+            font-size: 0.9em;
+            color: #666666;
+            margin-top: 15px;
+        }
+        .add-lesson {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+        .add-lesson h2 {
+            color: #000000;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-group input,
+        .input-group select,
+        .input-group textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #cccccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: #ffffff;
+            color: #000000;
+        }
+        .input-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        .input-group input:focus,
+        .input-group select:focus,
+        .input-group textarea:focus {
+            border-color: #000000;
+            outline: none;
+        }
+        .input-group label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            color: #000000;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: #ffffff;
+        }
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label,
+        .input-group select:focus + label,
+        .input-group textarea:focus + label {
+            top: -10px;
+            left: 15px;
+            font-size: 12px;
+            color: #000000;
+            background: #ffffff;
+            padding: 0 5px;
+        }
+        .add-lesson button {
+            padding: 15px;
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .add-lesson button:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🎮 Smash Bros Coaching</div>
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <% if (user.authority >= 4) { %>
+                <a href="/admin">Admin</a>
+            <% } %>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <h1 class="title">Smash Bros Lessons</h1>
+        <% if (canAdd) { %>
+        <div class="add-lesson">
+            <h2>➕ Add New Lesson</h2>
+            <form action="/lessons/add" method="POST">
+                <div class="input-group">
+                    <input type="text" id="title" name="title" placeholder=" " required>
+                    <label for="title">Lesson Title</label>
+                </div>
+                <div class="input-group">
+                    <textarea id="content" name="content" placeholder=" " required></textarea>
+                    <label for="content">Lesson Content</label>
+                </div>
+                <div class="input-group">
+                    <select id="level" name="level" required>
+                        <option value="">Select Level</option>
+                        <option value="beginner">Beginner</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="advanced">Advanced</option>
+                        <% if (user.authority >= 4) { %>
+                        <option value="coach">Coach</option>
+                        <% } %>
+                        <% if (user.authority >= 5) { %>
+                        <option value="admin">Admin</option>
+                        <% } %>
+                        <option value="all">All Levels</option>
+                    </select>
+                    <label for="level">Target Level</label>
+                </div>
+                <button type="submit">Add Lesson</button>
+            </form>
+        </div>
+        <% } %>
+        <div class="lessons-grid">
+            <% lessons.forEach(lesson => { %>
+            <div class="lesson-card">
+                <h3><%= lesson.title %></h3>
+                <p><%= lesson.content %></p>
+                <div class="lesson-meta">
+                    <strong>Level:</strong> <%= lesson.level %> | <strong>By:</strong> <%= lesson.author %> | <strong>Date:</strong> <%= new Date(lesson.createdAt).toLocaleDateString() %>
+                </div>
+            </div>
+            <% }); %>
+        </div>
+    </div>
+</body>
+</html>

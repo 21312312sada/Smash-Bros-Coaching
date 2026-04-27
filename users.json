@@ -1,0 +1,10 @@
+[
+  {
+    "name": "admin",
+    "password": "$2b$10$0aiReq91ptavWMnAy7CHM.RoZRP53J/oIqu74M2vUZGbraoqqjKJO",
+    "hasSwitch": true,
+    "yearLevel": 12,
+    "class": "admin",
+    "authority": 5
+  }
+]

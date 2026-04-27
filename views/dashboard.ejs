@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Smash Bros Coaching</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #000000;
+        }
+        .header {
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #cccccc;
+        }
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #000000;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-links a {
+            background: #ffffff;
+            color: #000000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            border: 1px solid #000000;
+        }
+        .nav-links a:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .welcome {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #000000;
+        }
+        .welcome h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        .welcome p {
+            font-size: 1.2em;
+            opacity: 0.8;
+        }
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: box-shadow 0.3s ease;
+        }
+        .card:hover {
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+        }
+        .card h2 {
+            color: #000000;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        .card p {
+            margin-bottom: 10px;
+            line-height: 1.6;
+            color: #000000;
+        }
+        .input-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #cccccc;
+            border-radius: 5px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+            background: #ffffff;
+            color: #000000;
+        }
+        .input-group input:focus {
+            border-color: #000000;
+            outline: none;
+        }
+        .input-group label {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            color: #000000;
+            transition: all 0.3s ease;
+            pointer-events: none;
+            background: #ffffff;
+        }
+        .input-group input:focus + label,
+        .input-group input:not(:placeholder-shown) + label {
+            top: -10px;
+            left: 15px;
+            font-size: 12px;
+            color: #000000;
+            background: #ffffff;
+            padding: 0 5px;
+        }
+        .card button {
+            padding: 15px;
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 5px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .card button:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+        .message {
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .message.error {
+            background: #ffcccc;
+            color: #000000;
+            border: 1px solid #ff0000;
+        }
+        .message.success {
+            background: #ccffcc;
+            color: #000000;
+            border: 1px solid #00ff00;
+        }
+        .practices-card {
+            grid-column: 1 / -1;
+        }
+        .practices-card h2 {
+            color: #2ed573;
+        }
+        .admin-link {
+            display: inline-block;
+            background: #000000;
+            color: #ffffff;
+            padding: 15px 30px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            border: 2px solid #000000;
+        }
+        .admin-link:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🎮 Smash Bros Coaching</div>
+        <div class="nav-links">
+            <% if (user.authority >= 4) { %>
+                <a href="/lessons">Lessons</a>
+            <% } %>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <div class="welcome">
+            <h1>Welcome, <%= user.name %>!</h1>
+            <p>Ready to level up your Smash skills?</p>
+        </div>
+        <% if (typeof error !== 'undefined') { %>
+            <div class="message error"><%= error %></div>
+        <% } %>
+        <% if (typeof success !== 'undefined') { %>
+            <div class="message success"><%= success %></div>
+        <% } %>
+        <div class="cards">
+            <div class="card">
+                <h2>👤 Profile Info</h2>
+                <p><strong>Class:</strong> <%= user.class %></p>
+                <p><strong>Authority Level:</strong> <%
+                    let authLevel = 1;
+                    switch(user.class) {
+                      case 'beginner': authLevel = 1; break;
+                      case 'intermediate': authLevel = 2; break;
+                      case 'advanced': authLevel = 3; break;
+                      case 'coach': authLevel = 4; break;
+                      case 'admin': authLevel = 5; break;
+                    }
+                  %><%= authLevel %></p>
+                <p><strong>Has Switch:</strong> <%= user.hasSwitch ? 'Yes' : 'No' %></p>
+                <p><strong>Year Level:</strong> <%= user.yearLevel %></p>
+            </div>
+            <div class="card">
+                <h2>🔒 Change Password</h2>
+                <form action="/change-password" method="POST">
+                    <div class="input-group">
+                        <input type="password" id="currentPassword" name="currentPassword" placeholder=" " required>
+                        <label for="currentPassword">Current Password</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="newPassword" name="newPassword" placeholder=" " required>
+                        <label for="newPassword">New Password</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" id="confirmNewPassword" name="confirmNewPassword" placeholder=" " required>
+                        <label for="confirmNewPassword">Confirm New Password</label>
+                    </div>
+                    <button type="submit">Change Password</button>
+                </form>
+            </div>
+            <div class="card practices-card">
+                <h2>🎯 Recommended Practices</h2>
+                <p><%= practices %></p>
+            </div>
+        </div>
+        <% if (user.authority >= 4) { %>
+            <div style="text-align: center;">
+                <a href="/admin" class="admin-link">Go to Admin Panel</a>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

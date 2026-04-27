@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - Smash Bros Coaching</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: #ffffff;
+            min-height: 100vh;
+            color: #000000;
+        }
+        .header {
+            background: #f5f5f5;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #cccccc;
+        }
+        .logo {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: #000000;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-links a {
+            background: #ffffff;
+            color: #000000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            border: 1px solid #000000;
+        }
+        .nav-links a:hover {
+            background: #000000;
+            color: #ffffff;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        .title {
+            text-align: center;
+            color: #000000;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+        }
+        .table-container {
+            background: #ffffff;
+            border: 2px solid #000000;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #f5f5f5;
+            color: #000000;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+        tr:hover {
+            background: #e0e0e0;
+            transition: background 0.3s ease;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #cccccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000000;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+        select {
+            padding: 8px 12px;
+            border: 2px solid #cccccc;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+            background: #ffffff;
+            color: #000000;
+        }
+        select:focus {
+            border-color: #000000;
+            outline: none;
+        }
+        input[type="number"] {
+            padding: 8px 12px;
+            border: 2px solid #cccccc;
+            border-radius: 5px;
+            font-size: 14px;
+            width: 60px;
+            transition: border-color 0.3s ease;
+            background: #ffffff;
+            color: #000000;
+        }
+        input[type="number"]:focus {
+            border-color: #000000;
+            outline: none;
+        }
+        button {
+            background: #000000;
+            color: #ffffff;
+            border: 2px solid #000000;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background: #ffffff;
+            color: #000000;
+        }
+        .no-edit {
+            color: #666666;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">🎮 Smash Bros Coaching</div>
+        <div class="nav-links">
+            <a href="/dashboard">Dashboard</a>
+            <a href="/lessons">Lessons</a>
+            <a href="/logout">Logout</a>
+        </div>
+    </div>
+    <div class="container">
+        <h1 class="title">Admin Panel</h1>
+        <div class="table-container">
+            <table>
+                <tr>
+                    <th>User</th>
+                    <th>Class</th>
+                    <th>Authority</th>
+                    <th>Actions</th>
+                </tr>
+                <% users.forEach(u => { %>
+                <tr>
+                    <td>
+                        <div class="user-info">
+                            <div class="user-avatar"><%= u.name.charAt(0).toUpperCase() %></div>
+                            <div>
+                                <strong><%= u.name %></strong><br>
+                                <small>Year <%= u.yearLevel %> • <%= u.hasSwitch ? 'Has Switch' : 'No Switch' %></small>
+                            </div>
+                        </div>
+                    </td>
+                    <td><%= u.class %></td>
+                    <td><%= u.authority %></td>
+                    <td>
+                        <form action="/admin/edit" method="POST" style="display: inline;">
+                            <input type="hidden" name="name" value="<%= u.name %>">
+                            <select name="class">
+                                <option value="beginner" <%= u.class === 'beginner' ? 'selected' : '' %>>Beginner</option>
+                                <option value="intermediate" <%= u.class === 'intermediate' ? 'selected' : '' %>>Intermediate</option>
+                                <option value="advanced" <%= u.class === 'advanced' ? 'selected' : '' %>>Advanced</option>
+                                <option value="coach" <%= u.class === 'coach' ? 'selected' : '' %>>Coach</option>
+                                <% if (canEditAuthority) { %>
+                                <option value="admin" <%= u.class === 'admin' ? 'selected' : '' %>>Admin</option>
+                                <% } %>
+                            </select>
+                            <span>Authority: <%= u.authority %></span>
+                            <button type="submit">Update</button>
+                        </form>
+                    </td>
+                </tr>
+                <% }); %>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

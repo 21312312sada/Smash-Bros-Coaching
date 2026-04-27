@@ -1,0 +1,29 @@
+{
+  "name": "smash-bros-coaching",
+  "version": "1.0.0",
+  "description": "A simple login website for Smash Bros coaching sessions.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/21312312sada/Smash-Bros-Coaching.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/21312312sada/Smash-Bros-Coaching/issues"
+  },
+  "homepage": "https://github.com/21312312sada/Smash-Bros-Coaching#readme",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "body-parser": "^2.2.2",
+    "ejs": "^5.0.2",
+    "express": "^5.2.1",
+    "express-session": "^1.19.0"
+  }
+}
