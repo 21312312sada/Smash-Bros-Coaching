@@ -169,7 +169,7 @@ app.post('/lessons/add', (req, res) => {
     createdAt: new Date().toISOString()
   };
   lessons.push(newLesson);
-  saveLessons();login
+  saveLessons();clogin
   res.redirect('/lessons');
 });
 
