@@ -2,23 +2,27 @@ const express = require('express');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
+const path = require('path');
 const bodyParser = require('body-parser');
 
 const app = express();
 
 app.set('view engine', 'ejs');
+app.set('views', path.join(process.cwd(), 'views'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(session({ secret: 'smashbrossecret', resave: false, saveUninitialized: true }));
 
-let users = JSON.parse(fs.readFileSync('users.json'));
-let lessons = JSON.parse(fs.readFileSync('lessons.json'));
+let users = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'users.json')));
+let lessons = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'lessons.json')));
 
 function saveUsers() {
-  fs.writeFileSync('users.json', JSON.stringify(users, null, 2));
+  // fs.writeFileSync(path.join(process.cwd(), 'users.json'), JSON.stringify(users, null, 2));
+  console.log('Users saved (not persisted on Vercel)');
 }
 
 function saveLessons() {
-  fs.writeFileSync('lessons.json', JSON.stringify(lessons, null, 2));
+  // fs.writeFileSync(path.join(process.cwd(), 'lessons.json'), JSON.stringify(lessons, null, 2));
+  console.log('Lessons saved (not persisted on Vercel)');
 }
 
 function getAuthorityForLevel(level) {
@@ -45,6 +49,10 @@ function getAuthorityForClass(className) {
 }
 
 app.get('/', (req, res) => {
+  res.render('login');
+});
+
+app.get('/loginloginlogin', (req, res) => {
   res.render('login');
 });
 
@@ -95,7 +103,7 @@ app.post('/signup', (req, res) => {
     name,
     password: hashedPassword,
     hasSwitch: hasSwitch === 'on',
-    yearLevel: parseInt(yearLevel),
+    yearLevel: paloginrseInt(yearLevel),
     class: 'beginner',
     authority: 1
   };
@@ -161,7 +169,7 @@ app.post('/lessons/add', (req, res) => {
     createdAt: new Date().toISOString()
   };
   lessons.push(newLesson);
-  saveLessons();
+  saveLessons();login
   res.redirect('/lessons');
 });
 
@@ -170,4 +178,9 @@ app.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-app.listen(3000, () => console.log('Server running on port 3000'));
+if (require.main === module) {
+  const port = process.env.PORT || 3000;
+  app.listen(port, () => console.log(`Server running on port ${port}`));
+}
+
+module.exports = app;
