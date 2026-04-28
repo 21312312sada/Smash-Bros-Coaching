@@ -2,7 +2,6 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const { Redis } = require('@upstash/redis');
@@ -11,12 +10,16 @@ const app = express();
 
 app.set('view engine', 'ejs');
 app.set('views', path.join(process.cwd(), 'views'));
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser('smashbrossecret'));
 
-const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
-const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
-const kv = upstashUrl && upstashToken ? new Redis({ url: upstashUrl, token: upstashToken }) : null;
+let kv = null;
+try {
+  kv = Redis.fromEnv();
+} catch (e) {
+  console.warn('Upstash Redis not configured:', e.message);
+}
+
 let localUsers = null;
 let localLessons = null;
 
