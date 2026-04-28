@@ -14,32 +14,58 @@ app.set('views', path.join(process.cwd(), 'views'));
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser('smashbrossecret'));
 
-const kv = new Redis({ url: process.env.UPSTASH_REDIS_REST_URL, token: process.env.UPSTASH_REDIS_REST_TOKEN });
+const upstashUrl = process.env.UPSTASH_REDIS_REST_URL;
+const upstashToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+const kv = upstashUrl && upstashToken ? new Redis({ url: upstashUrl, token: upstashToken }) : null;
+let localUsers = null;
+let localLessons = null;
 
 async function loadUsers() {
-  let data = await kv.get('users');
-  if (!data) {
-    data = fs.readFileSync(path.join(process.cwd(), 'users.json'), 'utf8');
-    await kv.set('users', data);
+  if (kv) {
+    let data = await kv.get('users');
+    if (!data) {
+      data = fs.readFileSync(path.join(process.cwd(), 'users.json'), 'utf8');
+      await kv.set('users', data);
+    }
+    return JSON.parse(data);
   }
-  return JSON.parse(data);
+
+  if (!localUsers) {
+    localUsers = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'users.json'), 'utf8'));
+  }
+  return localUsers;
 }
 
 async function loadLessons() {
-  let data = await kv.get('lessons');
-  if (!data) {
-    data = fs.readFileSync(path.join(process.cwd(), 'lessons.json'), 'utf8');
-    await kv.set('lessons', data);
+  if (kv) {
+    let data = await kv.get('lessons');
+    if (!data) {
+      data = fs.readFileSync(path.join(process.cwd(), 'lessons.json'), 'utf8');
+      await kv.set('lessons', data);
+    }
+    return JSON.parse(data);
   }
-  return JSON.parse(data);
+
+  if (!localLessons) {
+    localLessons = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'lessons.json'), 'utf8'));
+  }
+  return localLessons;
 }
 
 async function saveUsers(users) {
-  await kv.set('users', JSON.stringify(users));
+  if (kv) {
+    await kv.set('users', JSON.stringify(users));
+  } else {
+    localUsers = users;
+  }
 }
 
 async function saveLessons(lessons) {
-  await kv.set('lessons', JSON.stringify(lessons));
+  if (kv) {
+    await kv.set('lessons', JSON.stringify(lessons));
+  } else {
+    localLessons = lessons;
+  }
 }
 
 app.use(async (req, res, next) => {
@@ -55,6 +81,8 @@ app.use(async (req, res, next) => {
   }
   next();
 });
+
+function getAuthorityForLevel(level) {
   switch(level) {
     case 'beginner': return 1;
     case 'intermediate': return 2;
