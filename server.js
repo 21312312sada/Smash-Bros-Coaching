@@ -23,14 +23,26 @@ try {
 let localUsers = null;
 let localLessons = null;
 
+function parseMaybeJson(value) {
+  if (typeof value === 'string') {
+    return JSON.parse(value);
+  }
+  return value;
+}
+
 async function loadUsers() {
   if (kv) {
-    let data = await kv.get('users');
-    if (!data) {
-      data = fs.readFileSync(path.join(process.cwd(), 'users.json'), 'utf8');
-      await kv.set('users', data);
+    try {
+      let data = await kv.get('users');
+      if (!data) {
+        data = fs.readFileSync(path.join(process.cwd(), 'users.json'), 'utf8');
+        await kv.set('users', data);
+      }
+      return parseMaybeJson(data);
+    } catch (e) {
+      console.warn('Upstash Redis failed for loadUsers:', e.message);
+      kv = null;
     }
-    return JSON.parse(data);
   }
 
   if (!localUsers) {
@@ -41,12 +53,17 @@ async function loadUsers() {
 
 async function loadLessons() {
   if (kv) {
-    let data = await kv.get('lessons');
-    if (!data) {
-      data = fs.readFileSync(path.join(process.cwd(), 'lessons.json'), 'utf8');
-      await kv.set('lessons', data);
+    try {
+      let data = await kv.get('lessons');
+      if (!data) {
+        data = fs.readFileSync(path.join(process.cwd(), 'lessons.json'), 'utf8');
+        await kv.set('lessons', data);
+      }
+      return parseMaybeJson(data);
+    } catch (e) {
+      console.warn('Upstash Redis failed for loadLessons:', e.message);
+      kv = null;
     }
-    return JSON.parse(data);
   }
 
   if (!localLessons) {
@@ -57,18 +74,30 @@ async function loadLessons() {
 
 async function saveUsers(users) {
   if (kv) {
-    await kv.set('users', JSON.stringify(users));
-  } else {
-    localUsers = users;
+    try {
+      await kv.set('users', JSON.stringify(users));
+      return;
+    } catch (e) {
+      console.warn('Upstash Redis failed for saveUsers:', e.message);
+      kv = null;
+    }
   }
+
+  localUsers = users;
 }
 
 async function saveLessons(lessons) {
   if (kv) {
-    await kv.set('lessons', JSON.stringify(lessons));
-  } else {
-    localLessons = lessons;
+    try {
+      await kv.set('lessons', JSON.stringify(lessons));
+      return;
+    } catch (e) {
+      console.warn('Upstash Redis failed for saveLessons:', e.message);
+      kv = null;
+    }
   }
+
+  localLessons = lessons;
 }
 
 app.use(async (req, res, next) => {
@@ -242,9 +271,16 @@ app.post('/lessons/add', async (req, res) => {
   res.redirect('/lessons');
 });
 
-app.get('/logout', (req, res) => {
-  res.clearCookie('session');
-  res.redirect('/');
+app.get('/favicon.ico', (req, res) => {
+  res.status(204).end();
+});
+
+app.use((err, req, res, next) => {
+  console.error('Express error handler:', err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).send('Internal server error');
 });
 
 if (require.main === module) {
